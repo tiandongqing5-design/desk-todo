@@ -36,11 +36,15 @@
   - ✅ gh 2.101.0 已装入系统 PATH（`C:\Program Files\GitHub CLI\`）
   - ⏳ 待办：**在新终端里执行 `gh auth login` 完成授权**
   - 验收：`gh auth status` 显示 `✓ Logged in to github.com as tiandongqing5-design`
-- [ ] **0.5** 跑 `preflight.py` 预检
-  - ⏳ 待办：**先退出哲风壁纸**，再执行
-    `.venv\Scripts\python.exe scripts\preflight.py`
-  - 验收：7 项全 PASS，重点是「回读校验」和「抗外部接管」
-  - 若失败 → 把壁纸改成「图片」模式重跑；仍失败则切 PyQt6 悬浮窗方案
+- [x] **0.5** 跑 `preflight.py` 预检
+  - ✅ **12/12 项全部通过**（2026-09-22）。壁纸方案确认可行
+  - 实测记录：
+    - `SystemParametersInfoW(SET)` 返回成功，回读一致
+    - 等待 3 秒后仍一致 → 没有被外部程序延迟接管
+    - 还原原始壁纸成功 → `【哲风壁纸】天空-孤独-小猫.jpg`
+    - 物理分辨率 2880×1800，逻辑 1440×900，缩放 200%（画布必须按物理像素算）
+    - 哲风壁纸进程已退出；当前为「图片」模式（WallpaperStyle=10 填充）
+  - ⚠️ 结论：**后续开发与使用期间需保持哲风壁纸处于退出状态**
 - [x] **0.6** 配置 git 全局身份
   - ✅ user.name / user.email / init.defaultBranch=main / core.quotepath=false / core.autocrlf=true
 - [x] **0.7** `git init` + 首次 commit
