@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "next_id": 3,
+  "todos": [
+    {
+      "id": 1,
+      "title": "看一遍 README 的安装步骤",
+      "done": false,
+      "priority": "high",
+      "created": "2026-09-22",
+      "due": null
+    },
+    {
+      "id": 2,
+      "title": "跑一次 python -m desktodo.cli",
+      "done": false,
+      "priority": "normal",
+      "created": "2026-09-22",
+      "due": null
+    }
+  ]
+}
