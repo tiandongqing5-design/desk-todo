@@ -22,22 +22,30 @@
 
 ## Day 0 · 项目启动
 
-- [ ] **0.1** 建目录 `D:\WorkBuddy\desk-todo\`
-  - 验收：`.venv` 不存在、走 conda 环境；`envs\desktodo\python.exe -V` 输出 `3.11.16`
-- [ ] **0.2** 从 `daily` 克隆 conda 环境 `desktodo`，装 Flask
-  - 验收：`import flask, PIL` 都成功；`requirements.txt` 已生成
-- [ ] **0.3** 写 `.gitignore`、`README.md`
-  - 验收：`.gitignore` 里有 `output/`、`logs/`、`data/todos.json`
-- [ ] **0.4** 运行 `python scripts\preflight.py` 预检
-  - 验收：**7 项全 PASS**。重点是「回读校验」和「抗外部接管」两项
-  - 若失败 → 先退出哲风壁纸 / 把壁纸改成「图片」模式，重跑；仍失败则切 PyQt6 悬浮窗方案
-- [ ] **0.5** 配置 git 全局身份
-  - 验收：`git config --global user.name` 有值；`init.defaultBranch` 是 `main`
-- [ ] **0.6** 安装 gh CLI 并登录
+- [x] **0.1** 建目录 `D:\WorkBuddy\desk-todo\`
+  - ✅ 目录骨架已建（desktodo / web / data / output / logs / scripts / docs）
+- [x] **0.2** 建 Python 环境并装依赖
+  - ⚠️ 原计划从 `daily` 克隆 conda 环境 `desktodo`，但 `conda create` / `--clone`
+    被本机文件操作保护拦截（清理临时索引文件时触发批量删除确认），无法完成。
+    **改用项目内 `.venv`**，基座仍是 `daily` 的 Python 3.11.16。
+  - ✅ 结果：`.venv` 内 Python 3.11.16 + Flask 3.1.3 + Pillow 12.3.0，`requirements.txt` 已生成
+  - ⚠️ 注意：**不要**在 venv 里执行 `pip install --upgrade pip`，会把它弄坏（详见 README）
+- [x] **0.3** 写 `.gitignore`、`README.md`、`docs/roadmap.md`
+  - ✅ 已完成；`.gitignore` 覆盖 `output/`、`logs/`、`data/todos.json`、`.venv/`
+- [ ] **0.4** 安装 gh CLI 并登录
+  - ✅ gh 2.101.0 已装入系统 PATH（`C:\Program Files\GitHub CLI\`）
+  - ⏳ 待办：**在新终端里执行 `gh auth login` 完成授权**
   - 验收：`gh auth status` 显示 `✓ Logged in to github.com as tiandongqing5-design`
-  - 记得装完**重开终端**，否则 PATH 不刷新
-- [ ] **0.7** `git init` + 首次 commit + 建远程仓库推送
-  - 验收：GitHub 网页能看到 README 正常渲染
+- [ ] **0.5** 跑 `preflight.py` 预检
+  - ⏳ 待办：**先退出哲风壁纸**，再执行
+    `.venv\Scripts\python.exe scripts\preflight.py`
+  - 验收：7 项全 PASS，重点是「回读校验」和「抗外部接管」
+  - 若失败 → 把壁纸改成「图片」模式重跑；仍失败则切 PyQt6 悬浮窗方案
+- [x] **0.6** 配置 git 全局身份
+  - ✅ user.name / user.email / init.defaultBranch=main / core.quotepath=false / core.autocrlf=true
+- [x] **0.7** `git init` + 首次 commit
+  - ✅ 分支 `main`，8 个文件，提交 `chore: 初始化项目骨架并添加 .gitignore`
+  - ⏳ 待办：`gh repo create desk-todo --public --source=. --remote=origin --push`
 
 ---
 

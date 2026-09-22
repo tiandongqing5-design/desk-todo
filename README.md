@@ -52,7 +52,7 @@
 | 项 | 要求 | 本机实测 |
 |---|---|---|
 | 操作系统 | Windows 10/11 | Windows 11 build 10.0.26200 |
-| Python | 3.11+ | **3.11.16**（conda 环境 `desktodo`） |
+| Python | 3.11+ | **3.11.16**（项目内 `.venv`） |
 | 关键依赖 | Pillow、Flask | Pillow 12.3.0 / Flask 3.x |
 | 可选依赖 | pywin32（多显示器进阶） | 已装 312 |
 
@@ -62,35 +62,26 @@
 
 ### 关于 Python 环境
 
-本项目使用 conda 环境 `desktodo`（从 `daily` 克隆而来），**不在项目目录内**，
-所以在项目里看不到 `venv/` 目录。
-
-环境路径：
+本项目使用项目目录内的 `.venv` 虚拟环境，解释器基座是本机的 conda 环境 `daily`（Python 3.11.16）。
 
 ```
-C:\Users\wudug\.conda\envs\desktodo
+D:\WorkBuddy\desk-todo\.venv\Scripts\python.exe     -> Python 3.11.16
+D:\WorkBuddy\desk-todo\.venv\Scripts\pythonw.exe    -> 无控制台启动（壁纸刷新用）
 ```
 
-三条使用规范，踩过坑所以写下来：
+`.venv/` 已被 `.gitignore` 忽略，不会进仓库。
 
-1. **`conda` 不在 PATH 里**。要么用完整路径调用：
-   ```bash
-   D:\Anaconda3\condabin\conda.bat env list
-   ```
-   要么执行一次初始化（只需一次）：
-   ```bash
-   D:\Anaconda3\condabin\conda.bat init
-   ```
-   然后重开终端。
+**为什么不用 conda 环境？** 原本计划从 `daily` 克隆一个 conda 环境 `desktodo`，
+但 `conda create` / `conda --clone` 在本机被文件操作保护拦截（清理临时索引文件时触发批量删除确认），
+无法完成。改用 `.venv` 后同样拿到了 Python 3.11.16，而且环境在项目内、便于随项目删除重建。
 
-2. **`py` 和 `python` 命令认不出 conda 环境**。`py -0p` 只列出官方安装版，
-   看不到 conda 环境。调 Python 必须写全路径：
-   ```bash
-   C:\Users\wudug\.conda\envs\desktodo\python.exe -V
-   ```
+两条使用规范，踩过坑所以写下来：
 
-3. **脚本、计划任务、`.vbs` 里一律写全路径**，不要依赖 `conda activate` 的状态。
-   否则会出现「手动双击能跑、计划任务跑不了」这种很难查的问题。
+1. **调 Python 时写全路径**，不要依赖 `activate`。脚本、计划任务、`.vbs` 里一律用
+   `D:\WorkBuddy\desk-todo\.venv\Scripts\python.exe`。否则会出现「手动双击能跑、计划任务跑不了」。
+2. **不要升级 venv 里的 pip**。用 conda 的 Python 建的 venv，其 pip 是 24.0（自带 wheel）。
+   执行 `pip install --upgrade pip` 会先卸载旧 pip 再下载新 pip，中途失败就会留下一个坏掉的
+   `~ip` 目录，之后 `python -m pip` 直接报 `No module named pip`。真要升级就重建 venv。
 
 ---
 
@@ -101,19 +92,18 @@ git clone https://github.com/tiandongqing5-design/desk-todo.git
 cd desk-todo
 ```
 
-如果你在同一台机器上，环境 `desktodo` 已经建好了，直接跳到「准备数据」。
+如果你在同一台机器上，`.venv` 已经建好了，直接跳到「准备数据」。
 换机器的话按下面重建环境：
 
 ```bash
-# 1) 建环境（Python 3.11）
-conda create -n desktodo python=3.11 -y
-conda activate desktodo
+# 1) 建虚拟环境（用本机 Python 3.11，或任意 3.11+ 解释器）
+python -m venv .venv
 
 # 2) 装依赖
-pip install -r requirements.txt      # 只装运行必需的 Pillow + Flask
+.venv\Scripts\python.exe -m pip install -r requirements.txt
 
 # 3)（可选）多显示器进阶功能需要 pywin32
-pip install pywin32
+.venv\Scripts\python.exe -m pip install pywin32
 ```
 
 ### 准备数据
@@ -130,10 +120,13 @@ copy data\todos.example.json data\todos.json
 
 ## 使用
 
+> 下面用 `.venv\Scripts\python.exe` 全路径调用，**不需要先 `activate`**。
+> 如果你已经激活了虚拟环境，把前面那段路径去掉即可。
+
 ### 命令行
 
 ```bash
-python -m desktodo.cli
+.venv\Scripts\python.exe -m desktodo.cli
 ```
 
 > 注意必须用 `python -m desktodo.cli`，**不要**直接 `python desktodo/cli.py`。
@@ -239,13 +232,18 @@ CLI、桌面面板、Flask 三者都调用它，保证同一份数据不会分�
 否则会按系统默认的 GBK 编码去读写，导致乱码。
 
 **Q：`ModuleNotFoundError: No module named 'flask'`？**
-依赖装到别的解释器上了。确认用的是同一个：
+依赖装到别的解释器上了。确认用的是项目自己的：
 ```bash
-C:\Users\wudug\.conda\envs\desktodo\python.exe -m pip install Flask
+D:\WorkBuddy\desk-todo\.venv\Scripts\python.exe -m pip install Flask
 ```
 
+**Q：`No module named pip`，venv 里的 pip 坏了？**
+多半是执行过 `pip install --upgrade pip` 且中途失败，留下了一个 `~ip` 残缺目录。
+删掉 `.venv` 重建一次，然后**不要再升级 venv 的 pip**（见上文「关于 Python 环境」）。
+
 **Q：`conda: command not found`？**
-conda 没加进 PATH。用 `D:\Anaconda3\condabin\conda.bat`，或执行一次 `conda init` 后重开终端。
+本项目不需要 conda 运行。conda 只是当初用来提供 Python 3.11 解释器的。
+如果确实要用，完整路径是 `D:\Anaconda3\condabin\conda.bat`，或执行一次 `conda init` 后重开终端。
 
 ---
 
