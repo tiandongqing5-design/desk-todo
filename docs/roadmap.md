@@ -32,10 +32,12 @@
   - ⚠️ 注意：**不要**在 venv 里执行 `pip install --upgrade pip`，会把它弄坏（详见 README）
 - [x] **0.3** 写 `.gitignore`、`README.md`、`docs/roadmap.md`
   - ✅ 已完成；`.gitignore` 覆盖 `output/`、`logs/`、`data/todos.json`、`.venv/`
-- [ ] **0.4** 安装 gh CLI 并登录
+- [x] **0.4** 安装 gh CLI 并登录
   - ✅ gh 2.101.0 已装入系统 PATH（`C:\Program Files\GitHub CLI\`）
-  - ⏳ 待办：**在新终端里执行 `gh auth login` 完成授权**
-  - 验收：`gh auth status` 显示 `✓ Logged in to github.com as tiandongqing5-design`
+  - ✅ 已完成浏览器授权，`gh auth status` 显示 `✓ Logged in to github.com account tiandongqing5-design`
+  - ✅ `gh auth setup-git` 已执行，`credential.https://github.com.helper` 指向 gh
+  - 💡 踩坑记录：`gh auth login` 必须在**沙箱外的用户终端**执行；且 gh 是 Go 程序**不读 Windows 系统代理**，
+    只认 `HTTP_PROXY` 类环境变量 —— 实测走 Clash 代理时 `api.github.com` 返回 403，**直连才通**
 - [x] **0.5** 跑 `preflight.py` 预检
   - ✅ **12/12 项全部通过**（2026-09-22）。壁纸方案确认可行
   - 实测记录：
@@ -49,7 +51,10 @@
   - ✅ user.name / user.email / init.defaultBranch=main / core.quotepath=false / core.autocrlf=true
 - [x] **0.7** `git init` + 首次 commit
   - ✅ 分支 `main`，8 个文件，提交 `chore: 初始化项目骨架并添加 .gitignore`
-  - ⏳ 待办：`gh repo create desk-todo --public --source=. --remote=origin --push`
+  - ✅ 远程仓库已建并推送：https://github.com/tiandongqing5-design/desk-todo （public，已匿名验证可访问）
+  - ✅ 已打 `day0` 标签并推送到远程
+  - 💡 踩坑记录：github.com 可达性是**时变**的。不要写死全局 `git config http.proxy`，
+    否则代理一关就变成连接被拒，比网络抖动更难排查。做法：先直连，报错再临时挂一次代理
 
 ---
 
@@ -58,11 +63,14 @@
 目标产出：**V1.0 —— 数据能存下来的命令行待办工具**
 
 ### Day 1 · Git 工作流
-- [ ] 学习：工作区 / 暂存区 / 提交三个概念，`status` → `add` → `commit` 三步循环
-- [ ] 写：`hello.py`（打印一行问候）、完善 `README.md`
-- [ ] 成果：GitHub 上出现你的第一个仓库
-- [ ] 自测：`git log --oneline` 能看到提交；改一行代码后 `git status` 显示 modified
-- [ ] 提交：`chore: 初始化项目骨架并添加 .gitignore`
+- [x] 学习：工作区 / 暂存区 / 提交三个概念，`status` → `diff` → `add` → `commit` → `push` 五步循环
+- [x] 写：`hello.py` —— 函数默认参数、f-string、类型提示、`sys.argv`、`__main__` 守卫
+- [x] 成果：本地 5 次提交全部推送到 GitHub，网页 History 可见
+- [x] 自测：`git log --oneline` 看到 5 次提交；改一行后 `git status` 显示 modified、
+  `git diff` 看到红绿差异、`git restore` 能撤销
+- [x] 提交：`feat(cli): 添加 hello.py 入门脚本` + `docs: 修正 Day 0 完成状态并勾选 Day 1`
+  - 💡 **关键机制**：`git commit` **不会**立刻出现在网页上，只有 `git push` 之后 History 才会变
+  - 💡 刻意分成两次提交：一次代码、一次文档 —— 示范「一个提交只做一件事」
 
 ### Day 2 · list 与 dict
 - [ ] 学习：`list` 的增删改查、`dict` 的键值对、`while True` 循环、`input()`、f-string
